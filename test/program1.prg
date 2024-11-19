@@ -1,0 +1,4 @@
+IF qwe
+ELSE
+ENDIF
+ENDIF
