@@ -2908,23 +2908,43 @@ DEFINE CLASS FoxRef AS Session
 
 		IF THIS.WindowHandle >= 0
 			* see if we're positioned on a #include, SET PROCEDURE TO line
+			
 			IF VARTYPE(m.nLineNo) == 'N' AND m.nLineNo > 0
-				SELECT ;
-				  DefTable.UniqueID, ;
-				  DefTable.FileID, ;
-				  DefTable.DefType, ;
-				  DefTable.ProcName, ;
-				  DefTable.ClassName, ;
-				  DefTable.ProcLineNo, ;
-				  DefTable.LineNo, ;
-				  DefTable.Abstract ;
-				FROM (THIS.DefTable) DefTable ;
-				 WHERE ;
-				  DefTable.FileID == "WINDOW" AND ;
-				  (DefTable.DefType == DEFTYPE_INCLUDEFILE OR DefTable.DefType == DEFTYPE_SETCLASSPROC) AND ;
-				  DefTable.LineNo == m.nLineNo AND ;
-				  !DefTable.Inactive ;
-				 INTO CURSOR DefinitionCursor
+				*ZAP@241119
+				IF INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF")
+					SELECT ;
+					  DefTable.UniqueID, ;
+					  DefTable.FileID, ;
+					  DefTable.DefType, ;
+					  DefTable.ProcName, ;
+					  DefTable.ClassName, ;
+					  DefTable.ProcLineNo, ;
+					  DefTable.LineNo, ;
+					  DefTable.Abstract ;
+					FROM (THIS.DefTable) DefTable ;
+					 WHERE ;
+					  DefTable.FileID == "WINDOW" AND ;
+					  (DefTable.DefType == "Z") AND ;
+					  !DefTable.Inactive ;
+					 INTO CURSOR DefinitionCursor
+				ELSE
+					SELECT ;
+					  DefTable.UniqueID, ;
+					  DefTable.FileID, ;
+					  DefTable.DefType, ;
+					  DefTable.ProcName, ;
+					  DefTable.ClassName, ;
+					  DefTable.ProcLineNo, ;
+					  DefTable.LineNo, ;
+					  DefTable.Abstract ;
+					FROM (THIS.DefTable) DefTable ;
+					 WHERE ;
+					  DefTable.FileID == "WINDOW" AND ;
+					  (DefTable.DefType == DEFTYPE_INCLUDEFILE OR DefTable.DefType == DEFTYPE_SETCLASSPROC) AND ;
+					  DefTable.LineNo == m.nLineNo AND ;
+					  !DefTable.Inactive ;
+					 INTO CURSOR DefinitionCursor
+				ENDIF
 				nCnt = _TALLY
 			ENDIF
 

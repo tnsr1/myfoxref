@@ -68,6 +68,12 @@ DEFINE CLASS CFoxRefStart AS Session
 				EXIT
 			ENDIF
 		ENDFOR
+		
+		*ZAP@24119
+		PRIVATE m.pcSymbol, m.pcFilename
+		m.pcSymbol = m.cSymbol
+		m.pcFilename = m.cFilename
+		
 		IF VARTYPE(m.oFoxRef) <> 'O'
 			m.oFoxRef = NEWOBJECT("FoxRef", "FoxRefEngine.prg", .NULL., .T.)
 		ENDIF

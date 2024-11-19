@@ -238,7 +238,8 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 		#include "foxref.h"
 		LPARAMETERS cAbstract
 		
-		m.cAbstract = ALLTRIM(CHRTRAN(RTRIM(m.cAbstract), TAB, ' '))
+		*ZAP@241119
+		*m.cAbstract = ALLTRIM(CHRTRAN(RTRIM(m.cAbstract), TAB, ' '))
 		
 		RETURN LEFT(m.cAbstract, MAX_LINE_LENGTH)
 		

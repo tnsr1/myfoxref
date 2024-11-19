@@ -412,7 +412,10 @@ DEFINE CLASS RefSearch AS Custom
 		IF !m.lIncludeFile
 			* if definition name doesn't begin with an underscore or Alpha character
 			* then assume it's not a valid symbol name
-			IF !ISALPHA(m.cSymbol) AND LEFTC(m.cSymbol, 1) <> '_'
+			
+			*ZAP@241119
+			*IF !ISALPHA(m.cSymbol) AND LEFTC(m.cSymbol, 1) <> '_'
+			IF !ISALPHA(LTRIM(m.cSymbol)) AND LEFTC(LTRIM(m.cSymbol), 1) <> '_'
 				RETURN .F.
 			ENDIF
 		
@@ -431,6 +434,7 @@ DEFINE CLASS RefSearch AS Custom
 			THIS.RefID = SYS(2015)
 		ENDIF
 
+		*ZAP@241119
 		IF SEEK(.T., "FoxDefCursor", "Inactive")
 			REPLACE ;
 			  DefType WITH m.cDefType, ;
@@ -440,7 +444,7 @@ DEFINE CLASS RefSearch AS Custom
 			  ProcName WITH m.cProcName, ;
 			  ProcLineNo WITH m.nProcLineNo, ;
 			  LineNo WITH m.nLineNo, ;
-			  Abstract WITH THIS.StripTabs(m.cCode), ;
+			  Abstract WITH IIF(INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF"), m.cCode, THIS.StripTabs(m.cCode)), ;
 			  Inactive WITH .F. ;
 			 IN FoxDefCursor
 		ELSE
@@ -464,7 +468,7 @@ DEFINE CLASS RefSearch AS Custom
 			  m.cProcName, ;
 			  m.nProcLineNo, ;
 			  m.nLineNo, ;
-			  THIS.StripTabs(m.cCode), ;
+			  IIF(INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF"), m.cCode, THIS.StripTabs(m.cCode)), ;
 			  .F. ;
 			 )
 		ENDIF
@@ -1419,6 +1423,12 @@ DEFINE CLASS RefSearch AS Custom
 		ENDIF
 
 		
+		*ZAP@241119
+		LOCAL lcMargin, llAdd, m.lnMargin
+		m.lcMargin = ""
+		IF INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF") AND EMPTY(m.cProcName)
+			m.cProcName = JUSTSTEM(m.pcFileNAme)
+		ENDIF
 		FOR m.i = 1 TO m.nLineCnt
 			IF m.lUseMemLines
 				m.cCodeLine = MLINE(m.cTextBlock, 1, _MLINE)
@@ -1426,7 +1436,43 @@ DEFINE CLASS RefSearch AS Custom
 				m.cCodeLine = aCodeList[m.i]
 			ENDIF
 			
-		
+			*ZAP@241119
+			*IF m.nSearchType == SEARCHTYPE_IF
+				m.llAdd = .F.
+				m.lnMargin = 0
+				
+				DO CASE
+				CASE "IF " == LEFT(LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), 3)
+					m.llAdd = .T.
+					m.lnMargin = 4
+				CASE "ELSE" == LEFT(LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), 4)
+					m.llAdd = .T.
+				CASE "ENDIF" == LEFT(LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), 5)
+					m.llAdd = .T.
+					m.lnMargin = -4
+			 	ENDCASE
+			 	IF m.llAdd
+					*FUNCTION AddDefinition(cSymbol, cDefType, cClassName, cProcName, nProcLineNo, nLineNo, cCode, lIncludeFile)
+					THIS.AddDefinition( ;
+					  m.lcMargin + LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), ;
+					  "Z", ;
+					  m.cClassName, ;
+					  m.cProcName, ;
+					  IIF(m.cProcName = JUSTSTEM(m.pcFileNAme), m.i, m.nProcLineNo), ;
+					  m.i, ;
+					  m.cCodeLine ;
+					 )
+					IF m.lnMargin > 0
+						m.lcMargin = m.lcMargin + SPACE(m.lnMargin)
+					ENDIF
+					IF m.lnMargin < 0
+						m.lcMargin = LEFT(m.lcMargin, LEN(m.lcMargin) + m.lnMargin)
+					ENDIF
+					
+					LOOP
+				ENDIF
+			*ENDIF
+
 			m.nTokenCnt = THIS.ParseLine(m.cCodeLine, @aTokens, m.nTokenCnt)
 			IF m.nTokenCnt > 0 AND aTokens[m.nTokenCnt] == ';'
 				m.nProcLineNo = m.nProcLineNo + 1
