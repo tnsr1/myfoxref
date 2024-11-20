@@ -1422,8 +1422,9 @@ DEFINE CLASS RefSearch AS Custom
 			_MLINE = 0
 		ENDIF
 		
-		*ZAP@241119
-		LOCAL lcMargin, llAdd, m.lnMargin
+		*ZAP@241120
+		LOCAL lcMargin, llAdd, m.lnMargin, m.llDisableIF
+		m.llDisableIF = .F.
 		m.lcMargin = ""
 
 		FOR m.i = 1 TO m.nLineCnt
@@ -1443,13 +1444,24 @@ DEFINE CLASS RefSearch AS Custom
 			
 			*ZAP@241119
 			*IF m.nSearchType == SEARCHTYPE_IF
+				*ZAP@241120
+				IF "TEXT TO" = UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 7))
+					m.llDisableIF = .T.
+				ENDIF
+				IF "ENDTEXT" = UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 7))
+					m.llDisableIF = .F.
+				ENDIF
+				
 				m.llAdd = .F.
 				m.lnMargin = 0
 				
 				DO CASE
 				CASE "IF " == UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 3)) &&ZAP@241120 add UPPER
 					m.llAdd = .T.
-					m.lnMargin = 4
+					*ZAP@241120
+					IF !m.llDisableIF
+						m.lnMargin = 4
+					ENDIF
 				CASE "ELSE" == UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 4)) &&ZAP@241120 add UPPER
 					m.llAdd = .T.
 				CASE "ENDIF" == UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 5)) &&ZAP@241120 add UPPER
