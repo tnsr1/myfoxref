@@ -71,7 +71,7 @@ DEFINE CLASS CFoxRefStart AS Session
 		
 		*ZAP@241119
 		PRIVATE m.pcSymbol, m.pcFilename
-		m.pcSymbol = UPPER(m.cSymbol) && ZAP@241120 add UPPER
+		m.pcSymbol = UPPER(LTRIM(m.cSymbol,0,CHR(32),CHR(9))) && ZAP@241120 add UPPER
 		m.pcFilename = m.cFilename
 		m.pnLineNo = m.nLineNo
 		
@@ -143,6 +143,10 @@ DEFINE CLASS CFoxRefStart AS Session
 
 			CASE m.nMode == MODE_GOTODEF
 				IF !EMPTY(m.cSelectedText)
+					*ZAP@241120
+					IF EMPTY(m.pcSymbol)
+						m.pcSymbol = UPPER(LTRIM(m.cSelectedText,0,CHR(32),CHR(9)))
+					ENDIF
 					m.cSymbol = m.cSelectedText
 				ENDIF
 

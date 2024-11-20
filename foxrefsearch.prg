@@ -1421,19 +1421,20 @@ DEFINE CLASS RefSearch AS Custom
 			m.nLineCnt = MEMLINES(m.cTextBlock)
 			_MLINE = 0
 		ENDIF
-
 		
 		*ZAP@241119
 		LOCAL lcMargin, llAdd, m.lnMargin
 		m.lcMargin = ""
-		IF INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF") AND EMPTY(m.cProcName)
-			m.cProcName = JUSTSTEM(m.pcFileNAme)
-		ENDIF
+
 		FOR m.i = 1 TO m.nLineCnt
-			*ZAP@241120 Wrong LineNo
-			IF m.i = 1480 AND m.cProcName = "foxrefsearch"
-				SET STEP ON 
+			*ZAP@241120
+			IF EMPTY(m.cProcName) AND INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
+				m.cProcName = JUSTSTEM(m.pcFileNAme)
 			ENDIF
+			*ZAP@241120 Wrong LineNo
+*!*				IF m.i = 134 &&1480 &&AND m.cProcName = "foxrefsearch"
+*!*					SET STEP ON 
+*!*				ENDIF
 			IF m.lUseMemLines
 				m.cCodeLine = MLINE(m.cTextBlock, 1, _MLINE)
 			ELSE

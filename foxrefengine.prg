@@ -2910,8 +2910,8 @@ DEFINE CLASS FoxRef AS Session
 			* see if we're positioned on a #include, SET PROCEDURE TO line
 			
 			IF VARTYPE(m.nLineNo) == 'N' AND m.nLineNo > 0
-				*ZAP@241119
-				IF INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF")
+				*ZAP@241120
+				IF INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
 					SELECT ;
 					  DefTable.UniqueID, ;
 					  DefTable.FileID, ;
