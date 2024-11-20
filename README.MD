@@ -7,3 +7,5 @@ modified classic foxpro foxref for view definition IfElseEndif
 ![List Definitions](https://github.com/tnsr1/myfoxref/blob/main/Screenshot_2024-11-20_140849.png)
 <br><br>
 ![Margin Adv](https://github.com/tnsr1/myfoxref/blob/main/Screenshot_2024-11-21_015430.jpg)
+<br><br>
+![install](https://github.com/tnsr1/myfoxref/blob/main/Screenshot_2024-11-20_211350.jpg)
