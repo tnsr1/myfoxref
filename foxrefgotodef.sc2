@@ -159,6 +159,12 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 		
 		IF USED("DefinitionCursor")
 			SELECT * FROM DefinitionCursor INTO CURSOR SymbolCursor
+			
+			*ZAP@241120
+			SELECT SymbolCursor
+			IF INLIST(m.pcSymbol, "IF", "ELSE", "ENDIF")
+				LOCATE FOR LineNo = m.pnLineNo
+			ENDIF
 		ENDIF
 		
 	ENDPROC

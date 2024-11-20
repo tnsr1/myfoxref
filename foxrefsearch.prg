@@ -1430,6 +1430,10 @@ DEFINE CLASS RefSearch AS Custom
 			m.cProcName = JUSTSTEM(m.pcFileNAme)
 		ENDIF
 		FOR m.i = 1 TO m.nLineCnt
+			*ZAP@241120 Wrong LineNo
+			IF m.i = 1480 AND m.cProcName = "foxrefsearch"
+				SET STEP ON 
+			ENDIF
 			IF m.lUseMemLines
 				m.cCodeLine = MLINE(m.cTextBlock, 1, _MLINE)
 			ELSE
@@ -1442,34 +1446,37 @@ DEFINE CLASS RefSearch AS Custom
 				m.lnMargin = 0
 				
 				DO CASE
-				CASE "IF " == LEFT(LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), 3)
+				CASE "IF " == UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 3)) &&ZAP@241120 add UPPER
 					m.llAdd = .T.
 					m.lnMargin = 4
-				CASE "ELSE" == LEFT(LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), 4)
+				CASE "ELSE" == UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 4)) &&ZAP@241120 add UPPER
 					m.llAdd = .T.
-				CASE "ENDIF" == LEFT(LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), 5)
+				CASE "ENDIF" == UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 5)) &&ZAP@241120 add UPPER
 					m.llAdd = .T.
 					m.lnMargin = -4
 			 	ENDCASE
 			 	IF m.llAdd
 					*FUNCTION AddDefinition(cSymbol, cDefType, cClassName, cProcName, nProcLineNo, nLineNo, cCode, lIncludeFile)
+					*ZAP@241120
+					IF m.lnMargin < 0
+						m.lcMargin = LEFT(m.lcMargin, LEN(m.lcMargin) + m.lnMargin)
+					ENDIF
 					THIS.AddDefinition( ;
-					  m.lcMargin + LTRIM(m.cCodeLine,0,CHR(20),CHR(9)), ;
+					  IIF(m.lnMargin = 0, LEFT(m.lcMargin, LEN(m.lcMargin) - 4), m.lcMargin) + LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), ;
 					  "Z", ;
 					  m.cClassName, ;
 					  m.cProcName, ;
 					  IIF(m.cProcName = JUSTSTEM(m.pcFileNAme), m.i, m.nProcLineNo), ;
 					  m.i, ;
-					  m.cCodeLine ;
+					  IIF(m.lnMargin = 0, LEFT(m.lcMargin, LEN(m.lcMargin) - 4), m.lcMargin) + LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), ;
 					 )
+					
 					IF m.lnMargin > 0
 						m.lcMargin = m.lcMargin + SPACE(m.lnMargin)
 					ENDIF
-					IF m.lnMargin < 0
-						m.lcMargin = LEFT(m.lcMargin, LEN(m.lcMargin) + m.lnMargin)
-					ENDIF
-					
+
 					LOOP
+					*ZAP@241120 Not show next line. LineNo 1480
 				ENDIF
 			*ENDIF
 
