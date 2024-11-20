@@ -1423,9 +1423,10 @@ DEFINE CLASS RefSearch AS Custom
 		ENDIF
 		
 		*ZAP@241120
-		LOCAL lcMargin, llAdd, m.lnMargin, m.llDisableIF
+		LOCAL lcMargin, llAdd, m.lnMargin, m.llDisableIF, m.lcMarginAdv
 		m.llDisableIF = .F.
 		m.lcMargin = ""
+		m.lcMarginAdv = ""
 
 		FOR m.i = 1 TO m.nLineCnt
 			*ZAP@241120
@@ -1473,6 +1474,7 @@ DEFINE CLASS RefSearch AS Custom
 					*ZAP@241120
 					IF m.lnMargin < 0
 						m.lcMargin = LEFT(m.lcMargin, LEN(m.lcMargin) + m.lnMargin)
+						m.lcMarginAdv = LEFT(m.lcMarginAdv, LEN(m.lcMarginAdv) + m.lnMargin)
 					ENDIF
 					THIS.AddDefinition( ;
 					  IIF(m.lnMargin = 0, LEFT(m.lcMargin, LEN(m.lcMargin) - 4), m.lcMargin) + LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), ;
@@ -1481,11 +1483,13 @@ DEFINE CLASS RefSearch AS Custom
 					  m.cProcName, ;
 					  IIF(m.cProcName = JUSTSTEM(m.pcFileNAme), m.i, m.nProcLineNo), ;
 					  m.i, ;
-					  IIF(m.lnMargin = 0, LEFT(m.lcMargin, LEN(m.lcMargin) - 4), m.lcMargin) + LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), ;
+					  IIF(m.lnMargin = 0, LEFT(m.lcMarginAdv, LEN(m.lcMarginAdv) - 4), m.lcMarginAdv) + LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), ;
 					 )
 					
 					IF m.lnMargin > 0
 						m.lcMargin = m.lcMargin + SPACE(m.lnMargin)
+						*ZAP@241120
+						m.lcMarginAdv = m.lcMarginAdv + "...>"
 					ENDIF
 
 					LOOP
