@@ -1489,7 +1489,7 @@ DEFINE CLASS RefSearch AS Custom
 					IF m.lnMargin > 0
 						m.lcMargin = m.lcMargin + SPACE(m.lnMargin)
 						*ZAP@241120
-						m.lcMarginAdv = m.lcMarginAdv + "^..." &&ZAP@241121"...>"
+						m.lcMarginAdv = m.lcMarginAdv + "|   " &&ZAP@241121"...>"
 					ENDIF
 
 					LOOP
