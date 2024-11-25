@@ -37,6 +37,7 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 		*m: striptabs
 		*p: cfontface
 		*p: cfontstyle
+		*p: cgotodefsymbol
 		*p: nfontsize
 		*p: ofoxref
 	*</DefinedPropArrayMethod>
@@ -46,6 +47,7 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 		Caption = "Go To Definition"
 		cfontface = Tahoma
 		cfontstyle = 
+		cgotodefsymbol = 
 		cresourceid = FOXREF
 		DoCreate = .T.
 		Height = 294
@@ -152,6 +154,71 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 		* display #define's in red
 		THIS.grdGotoDef.colFilename.DynamicForeColor = [IIF(SymbolCursor.DefType == ] + DEFTYPE_DEFINE + [, 255, THIS.ForeColor)]
 		
+		*ZAP@241125
+		IF INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
+			THIS.cgotodefsymbol = ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9))
+			THIS.KeyPreview = .T.
+		ENDIF
+	ENDPROC
+
+	PROCEDURE KeyPress
+		LPARAMETERS nKeyCode, nShiftAltCtrl
+		
+		*ZAP@241125
+		LOCAL lnOldSel, lcNearOld, lnOccurs, lnLineNo
+		m.lnSelOld = SELECT()
+		m.lcNearOld = SET("Near")
+		m.lnOccurs = OCCURS("|   ", SymbolCursor.Abstract)
+		m.lnLineNo = SymbolCursor.LineNo
+		
+		IF INLIST(THIS.cgotodefsymbol, "IF", "ELSE", "ENDIF")
+			*Home
+			IF nKeyCode = 1
+				GO TOP IN SymbolCursor
+		
+				THIS.grdGotoDef.SetFocus()
+				NODEFAULT 
+			ENDIF
+		
+			*End
+			IF nKeyCode = 6
+				GO BOTTOM IN SymbolCursor
+		
+				THIS.grdGotoDef.SetFocus()
+				NODEFAULT 
+			ENDIF
+		
+			*PageDown
+			IF nKeyCode = 3
+				SET NEAR ON
+				SELECT SymbolCursor
+				LOCATE FOR m.lnOccurs = OCCURS("|   ", Abstract) AND LineNo > m.lnLineNo
+				
+				IF !FOUND()
+					WAIT WINDOW "Not found" NOWAIT
+				ENDIF
+				
+				SET NEAR &lcNearOld
+				SELECT(m.lnSelOld)
+		
+				THIS.grdGotoDef.SetFocus()
+				NODEFAULT
+			ENDIF
+			*PageUp
+			IF nKeyCode = 18
+				LOCAL ARRAY laTmp(1)
+				SELECT MAX(RECNO()) FROM SymbolCursor WHERE m.lnOccurs = OCCURS("|   ", Abstract) AND LineNo < m.lnLineNo ;
+					INTO ARRAY laTmp
+				IF !EMPTY(NVL(m.laTmp(1),0))
+					GO (m.laTmp(1)) IN SymbolCursor
+				ELSE
+					WAIT WINDOW "Not found" NOWAIT
+				ENDIF
+		
+				THIS.grdGotoDef.SetFocus()
+				NODEFAULT 
+			ENDIF
+		ENDIF
 	ENDPROC
 
 	PROCEDURE Load
