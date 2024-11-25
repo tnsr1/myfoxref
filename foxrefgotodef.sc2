@@ -188,8 +188,8 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 				NODEFAULT 
 			ENDIF
 		
-			*PageDown
-			IF nKeyCode = 3
+			*Shift + PageDown
+			IF nShiftAltCtrl = 1 AND nKeyCode = 51
 				SET NEAR ON
 				SELECT SymbolCursor
 				LOCATE FOR m.lnOccurs = OCCURS("|   ", Abstract) AND LineNo > m.lnLineNo
@@ -204,8 +204,8 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 				THIS.grdGotoDef.SetFocus()
 				NODEFAULT
 			ENDIF
-			*PageUp
-			IF nKeyCode = 18
+			*Shift + PageUp
+			IF nShiftAltCtrl = 1 AND nKeyCode = 57
 				LOCAL ARRAY laTmp(1)
 				SELECT MAX(RECNO()) FROM SymbolCursor WHERE m.lnOccurs = OCCURS("|   ", Abstract) AND LineNo < m.lnLineNo ;
 					INTO ARRAY laTmp
