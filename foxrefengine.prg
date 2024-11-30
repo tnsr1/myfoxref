@@ -2911,7 +2911,7 @@ DEFINE CLASS FoxRef AS Session
 			
 			IF VARTYPE(m.nLineNo) == 'N' AND m.nLineNo > 0
 				*ZAP@241120
-				IF INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
+				IF TYPE("m.pcSymbol") != "U" AND INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
 					SELECT ;
 					  DefTable.UniqueID, ;
 					  DefTable.FileID, ;

@@ -529,7 +529,7 @@ DEFINE CLASS cresultsallgrid AS cfoxgrid OF "foxctrls.vcx"
 		GridLineColor = 192,192,192
 		GridLines = 2
 		HeaderHeight = 18
-		Height = 288
+		Height = 383
 		LockColumns = 1
 		Name = "cresultsallgrid"
 		ReadOnly = .T.
@@ -538,7 +538,7 @@ DEFINE CLASS cresultsallgrid AS cfoxgrid OF "foxctrls.vcx"
 		RowHeight = 18
 		ScrollBars = 3
 		SplitBar = .F.
-		Width = 545
+		Width = 818
 		Column1.Alignment = 0
 		Column1.ColumnOrder = 3
 		Column1.ControlSource = ""
@@ -613,6 +613,7 @@ DEFINE CLASS cresultsallgrid AS cfoxgrid OF "foxctrls.vcx"
 	*</PropValue>
 
 	ADD OBJECT 'colCheckbox.chkSelected' AS cfoxcheckbox WITH ;
+		Alignment = 0, ;
 		BackColor = 255,255,255, ;
 		Caption = "", ;
 		Centered = .T., ;
@@ -627,7 +628,7 @@ DEFINE CLASS cresultsallgrid AS cfoxgrid OF "foxctrls.vcx"
 
 	ADD OBJECT 'colCheckbox.Header1' AS header WITH ;
 		Alignment = 2, ;
-		Caption = "", ;
+		Caption = "Checkbox", ;
 		FontName = "Tahoma", ;
 		FontSize = 8, ;
 		Name = "Header1", ;

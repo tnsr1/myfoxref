@@ -444,7 +444,7 @@ DEFINE CLASS RefSearch AS Custom
 			  ProcName WITH m.cProcName, ;
 			  ProcLineNo WITH m.nProcLineNo, ;
 			  LineNo WITH m.nLineNo, ;
-			  Abstract WITH IIF(INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF"), m.cCode, THIS.StripTabs(m.cCode)), ;
+			  Abstract WITH IIF(TYPE("m.pcSymbol") != "U" AND INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF"), m.cCode, THIS.StripTabs(m.cCode)), ;
 			  Inactive WITH .F. ;
 			 IN FoxDefCursor
 		ELSE
@@ -468,7 +468,7 @@ DEFINE CLASS RefSearch AS Custom
 			  m.cProcName, ;
 			  m.nProcLineNo, ;
 			  m.nLineNo, ;
-			  IIF(INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF"), m.cCode, THIS.StripTabs(m.cCode)), ;
+			  IIF(TYPE("m.pcSymbol") != "U" AND INLIST(ALLTRIM(m.pcSymbol), "IF", "ELSE", "ENDIF"), m.cCode, THIS.StripTabs(m.cCode)), ;
 			  .F. ;
 			 )
 		ENDIF
@@ -1430,7 +1430,7 @@ DEFINE CLASS RefSearch AS Custom
 
 		FOR m.i = 1 TO m.nLineCnt
 			*ZAP@241120
-			IF EMPTY(m.cProcName) AND INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
+			IF EMPTY(m.cProcName) AND TYPE("m.pcFileNAme") != "U" AND TYPE("m.pcSymbol") != "U" AND INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
 				m.cProcName = JUSTSTEM(m.pcFileNAme)
 			ENDIF
 			*ZAP@241120 Wrong LineNo
@@ -1445,6 +1445,8 @@ DEFINE CLASS RefSearch AS Custom
 			
 			*ZAP@241119
 			*IF m.nSearchType == SEARCHTYPE_IF
+			*ZAP@241130
+			IF TYPE("m.pcSymbol") != "U" AND INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "IF", "ELSE", "ENDIF")
 				*ZAP@241120
 				IF "TEXT TO" = UPPER(LEFT(LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), 7))
 					m.llDisableIF = .T.
@@ -1481,7 +1483,7 @@ DEFINE CLASS RefSearch AS Custom
 					  "Z", ;
 					  m.cClassName, ;
 					  m.cProcName, ;
-					  IIF(m.cProcName = JUSTSTEM(m.pcFileNAme), m.i, m.nProcLineNo), ;
+					  IIF(TYPE("m.pcFileName") != "U" AND m.cProcName = JUSTSTEM(m.pcFileName), m.i, m.nProcLineNo), ;
 					  m.i, ;
 					  IIF(m.lnMargin = 0, LEFT(m.lcMarginAdv, LEN(m.lcMarginAdv) - 4), m.lcMarginAdv) + LTRIM(m.cCodeLine,0,CHR(32),CHR(9)), ;
 					 )
@@ -1495,7 +1497,7 @@ DEFINE CLASS RefSearch AS Custom
 					LOOP
 					*ZAP@241120 Not show next line. LineNo 1480
 				ENDIF
-			*ENDIF
+			ENDIF
 
 			m.nTokenCnt = THIS.ParseLine(m.cCodeLine, @aTokens, m.nTokenCnt)
 			IF m.nTokenCnt > 0 AND aTokens[m.nTokenCnt] == ';'

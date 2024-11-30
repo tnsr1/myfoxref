@@ -39,14 +39,14 @@ FOR EACH loProject IN _VFP.Projects FOXOBJECT
 ENDFOR
 
 STRTOFILE( '', '__newproject.f2b' )
-BUILD PROJECT foxref.PJX FROM '__newproject.f2b'
+BUILD PROJECT foxref.pjx FROM '__newproject.f2b'
 FOR EACH loProject IN _VFP.Projects FOXOBJECT
 	loProject.Close()
 ENDFOR
 
-MODIFY PROJECT 'foxref.PJX' NOWAIT NOSHOW NOPROJECTHOOK
+MODIFY PROJECT 'foxref.pjx' NOWAIT NOSHOW NOPROJECTHOOK
 
-loProject = _VFP.Projects('foxref.PJX')
+loProject = _VFP.Projects('foxref.pjx')
 
 WITH loProject.FILES
 	.ADD('bitmaps\check.bmp')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
@@ -141,7 +141,7 @@ WITH loProject
 ENDWITH
 
 
-_VFP.Projects('foxref.PJX').Close()
+_VFP.Projects('foxref.pjx').Close()
 *ERASE '__newproject.f2b'
 CD (lcCurdir)
 RETURN
