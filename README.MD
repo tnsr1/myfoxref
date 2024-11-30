@@ -14,3 +14,5 @@ modified classic foxpro foxref for view definition If Else Endif
 ;o)
 <br><br>
 WBR, alex;
+<br><br>
+25 Nov added hot keys Home, End, Shift+PgUp, Shift+PgDown
