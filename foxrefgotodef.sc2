@@ -159,6 +159,11 @@ DEFINE CLASS frmfoxrefgotodef AS cfoxrefform OF "foxctrls.vcx"
 			THIS.cgotodefsymbol = ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9))
 			THIS.KeyPreview = .T.
 		ENDIF
+		
+		*ZAP@241130
+		IF INLIST(ALLTRIM(m.pcSymbol,0,CHR(32),CHR(9)), "ELSE", "ENDIF")
+			THIS.grdGotoDef.DoScroll(2)
+		ENDIF
 	ENDPROC
 
 	PROCEDURE KeyPress
